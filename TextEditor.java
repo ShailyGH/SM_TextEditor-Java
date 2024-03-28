@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.awt.Color;
 import java.util.List;
@@ -13,7 +15,8 @@ import javax.swing.text.Highlighter.HighlightPainter;
 
 //TextEditor class starts here
 class TextEditor extends Frame implements ActionListener {
-    JTextArea ta = new JTextArea();
+    static JTextArea ta = new JTextArea();
+    static File f1;
     int i, len1, len, pos1;
     String str = "", s3 = "", s2 = "", s4 = "", s32 = "", s6 = "", s7 = "", s8 = "", s9 = "", strFind = "", strReplace = "";
     String months[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
@@ -73,22 +76,24 @@ class TextEditor extends Frame implements ActionListener {
         MyWindowsAdapter mw = new MyWindowsAdapter(this);
         addWindowListener(mw);
         setSize(500, 500);
-        setTitle("untitled notepad");
+        setTitle("Shaily's notepad");
         setVisible(true);
-
     }
 
     public void actionPerformed(ActionEvent ae) {
         String arg = (String) ae.getActionCommand();
         highlighter.removeAllHighlights();
-        if (arg.equals("New")) {
+        if (arg.equals("New"))
+        {
             dispose();
             TextEditor t11 = new TextEditor();
             t11.setSize(500, 500);
             t11.setVisible(true);
         }
-        try {
-            if (arg.equals("Open")) {
+        try
+        {
+            if (arg.equals("Open"))
+            {
                 FileDialog fd1 = new FileDialog(this, "Select File", FileDialog.LOAD);
                 fd1.setVisible(true);
                 String s4 = "";
@@ -105,10 +110,14 @@ class TextEditor extends Frame implements ActionListener {
                 ta.setText(s4);
                 fii.close();
             }
-        } catch (IOException e) {
         }
-        try {
-            if (arg.equals("Save As")) {
+        catch (IOException e)
+        {
+        }
+        try
+        {
+            if (arg.equals("Save As"))
+            {
                 FileDialog dialog1 = new FileDialog(this, "Save As", FileDialog.SAVE);
                 dialog1.setVisible(true);
                 s7 = dialog1.getDirectory();
@@ -117,17 +126,21 @@ class TextEditor extends Frame implements ActionListener {
                 s6 = ta.getText();
                 len1 = s6.length();
                 byte buf[] = s6.getBytes();
-                File f1 = new File(s9);
+                f1 = new File(s9);
                 FileOutputStream fobj1 = new FileOutputStream(f1);
-                for (int k = 0; k < len1; k++) {
+                for (int k = 0; k < len1; k++)
+                {
                     fobj1.write(buf[k]);
                 }
                 fobj1.close();
             }
             this.setTitle(s8 + " TextEditor File");
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
         }
         if (arg.equals("Exit")) {
+            saveFile(f1, ta);
             System.exit(0);
         }
         if (arg.equals("Cut")) {
@@ -240,16 +253,32 @@ class TextEditor extends Frame implements ActionListener {
         TextEditor to = new TextEditor();
     }
 
+    public void saveFile(File file, JTextArea textArea)
+    {
+        if (file != null) {
+            String filePath = file.getAbsolutePath();
+            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePath)))
+            {
+                writer.write(textArea.getText());
+            } catch (IOException e)
+            {
+                System.out.println("savefile exception");
+            }
+        }
+    }
 }
 
 class MyWindowsAdapter extends WindowAdapter {
     TextEditor tt;
 
-    public MyWindowsAdapter(TextEditor ttt) {
+    public MyWindowsAdapter(TextEditor ttt)
+    {
         tt = ttt;
     }
 
-    public void windowClosing(WindowEvent we) {
+    public void windowClosing(WindowEvent we)
+    {
+        tt.saveFile(TextEditor.f1, TextEditor.ta);
         tt.dispose();
     }
 }
