@@ -3,6 +3,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.awt.Color;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
@@ -18,6 +19,8 @@ class TextEditor extends Frame implements ActionListener {
     String months[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December" };
     CheckboxMenuItem chkb = new CheckboxMenuItem("Word Wrap");
+    Highlighter highlighter;
+    HighlightPainter painter;
 
     public TextEditor() {
         MenuBar mb = new MenuBar();
@@ -38,7 +41,7 @@ class TextEditor extends Frame implements ActionListener {
         };
         MenuItem mi2[] = { new MenuItem("Delete"), new MenuItem("Cut"),
                 new MenuItem("Copy"), new MenuItem("Paste"), new MenuItem("Find"),
-                new MenuItem("Find Next"), new MenuItem("Replace"),
+                new MenuItem("Find All"), new MenuItem("Replace"),
                 new MenuItem("Go To"), new MenuItem("Select All"),
                 new MenuItem("Time Stamp") };
         MenuItem mi3[] = { new MenuItem("Choose Font"), new MenuItem("Compile"),
@@ -63,15 +66,21 @@ class TextEditor extends Frame implements ActionListener {
             m4.add(mi4[i]);
             mi4[i].addActionListener(this);
         }
+
+        highlighter = ta.getHighlighter();
+        painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
+
         MyWindowsAdapter mw = new MyWindowsAdapter(this);
         addWindowListener(mw);
         setSize(500, 500);
         setTitle("untitled notepad");
         setVisible(true);
+
     }
 
     public void actionPerformed(ActionEvent ae) {
         String arg = (String) ae.getActionCommand();
+        highlighter.removeAllHighlights();
         if (arg.equals("New")) {
             dispose();
             TextEditor t11 = new TextEditor();
@@ -164,13 +173,10 @@ class TextEditor extends Frame implements ActionListener {
         if (arg.equals("Find"))
         {
             strFind = JOptionPane.showInputDialog(ta,"Enter the text to find", null);
-
             i = ta.getText().indexOf(strFind);
 
             if (i >= 0)
             {
-                Highlighter highlighter = ta.getHighlighter();
-                HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
                 try
                 {
                     highlighter.addHighlight(i, i + strFind.length(), painter);
@@ -181,21 +187,38 @@ class TextEditor extends Frame implements ActionListener {
                 }
             }
         }
-        if (arg.equals("Find Next"))
+        if (arg.equals("Find All"))
         {
+            List<Integer> listArray  = new ArrayList<Integer>();
+            int index = 0;
+
+            strFind = JOptionPane.showInputDialog(ta,"Enter the text to find all", null);
             i = ta.getText().indexOf(strFind);
 
-            if (i >= 0)
+            for (String line : ta.getText().split("\\n"))
             {
-                Highlighter highlighter = ta.getHighlighter();
-                HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
-                try
+                String[] tokens = line.split(" ");
+                for (int j = 0; j < tokens.length; j++)
                 {
-                    highlighter.addHighlight(i, i + strFind.length(), painter);
+                    if (tokens[j].equals(strFind))
+                    {
+                        listArray.add(index);
+                    }
+                    index = index + tokens[j].length()+1;
                 }
-                catch (BadLocationException e)
-                {
-                    throw new RuntimeException(e);
+            }
+
+            for (Integer k : listArray)
+            {
+                if (k >= 0) {
+                    try
+                    {
+                        highlighter.addHighlight(k, k + strFind.length(), painter);
+                    }
+                    catch (BadLocationException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
