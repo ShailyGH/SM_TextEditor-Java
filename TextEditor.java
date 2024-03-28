@@ -2,12 +2,19 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.awt.Color;
+import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 //TextEditor class starts here
 class TextEditor extends Frame implements ActionListener {
-    TextArea ta = new TextArea();
+    JTextArea ta = new JTextArea();
     int i, len1, len, pos1;
-    String str = "", s3 = "", s2 = "", s4 = "", s32 = "", s6 = "", s7 = "", s8 = "", s9 = "";
+    String str = "", s3 = "", s2 = "", s4 = "", s32 = "", s6 = "", s7 = "", s8 = "", s9 = "", strFind = "", strReplace = "";
     String months[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December" };
     CheckboxMenuItem chkb = new CheckboxMenuItem("Word Wrap");
@@ -154,6 +161,57 @@ class TextEditor extends Frame implements ActionListener {
             d1.setVisible(true);
             setSize(500, 500);
         }
+        if (arg.equals("Find"))
+        {
+            strFind = JOptionPane.showInputDialog(ta,"Enter the text to find", null);
+
+            i = ta.getText().indexOf(strFind);
+
+            if (i >= 0)
+            {
+                Highlighter highlighter = ta.getHighlighter();
+                HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
+                try
+                {
+                    highlighter.addHighlight(i, i + strFind.length(), painter);
+                }
+                catch (BadLocationException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        if (arg.equals("Find Next"))
+        {
+            i = ta.getText().indexOf(strFind);
+
+            if (i >= 0)
+            {
+                Highlighter highlighter = ta.getHighlighter();
+                HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
+                try
+                {
+                    highlighter.addHighlight(i, i + strFind.length(), painter);
+                }
+                catch (BadLocationException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        if (arg.equals("Replace"))
+        {
+            strFind = JOptionPane.showInputDialog(ta,"Enter the text to find", null);
+            strReplace = JOptionPane.showInputDialog(ta,"Enter the text to Replace", null);
+
+            i = ta.getText().indexOf(strFind);
+
+            if (i >= 0)
+            {
+                ta.replaceRange(strReplace, i, i + strFind.length());
+            }
+        }
+
     }
     public static void main(String args[]) {
         TextEditor to = new TextEditor();
