@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.print.PrinterException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,10 +26,22 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
     Highlighter highlighter;
     HighlightPainter painter;
 
+    // Added Label for About Option
+    JLabel lbAbout;
+
     public TextEditor() {
         MenuBar mb = new MenuBar();
         setLayout(new BorderLayout());
         add("Center", ta);
+
+        // Added Vertical and Horizonal Scrollbar
+        JScrollPane sp = new JScrollPane(ta);
+        sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        add(sp);
+
+        lbAbout= new JLabel();
+
         setMenuBar(mb);
         Menu m1 = new Menu("File");
         Menu m2 = new Menu("Edit");
@@ -184,6 +197,10 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
         }
         if (arg.equals("About TextEditor")) {
             AboutDialog d1 = new AboutDialog(this, "About TextEditor");
+            d1.add(lbAbout);
+            lbAbout.setText("<HTML><p>This is a custom text editor app. The app can be used to replace notepad or similar <br>" +
+                    " tool for text editor. <br> <br> I hope you enjoy this cool app !!!</p></html>");
+
             d1.setVisible(true);
             setSize(500, 500);
         }
@@ -251,6 +268,27 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
                 ta.replaceRange(strReplace, i, i + strFind.length());
             }
         }
+        if (arg.equals("Print"))
+        {
+            try
+            {
+                boolean complete = ta.print();
+                if(complete)
+                {
+                    JOptionPane.showMessageDialog(null, "Done printing","Information", JOptionPane.INFORMATION_MESSAGE );
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Cancel Printing!","Printer", JOptionPane.ERROR_MESSAGE );
+                }
+            }
+            catch (PrinterException e)
+            {
+                throw new RuntimeException(e);
+            }
+
+
+        }
 
     }
     public static void main(String args[]) {
@@ -306,7 +344,7 @@ class MyWindowsAdapter extends WindowAdapter {
     }
 }
 
-class AboutDialog extends Dialog implements ActionListener {
+class AboutDialog extends JDialog implements ActionListener {
     AboutDialog(Frame parent, String title) {
         super(parent, title, false);
         this.setResizable(false);
