@@ -285,10 +285,39 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
             {
                 throw new RuntimeException(e);
             }
-
-
         }
+        if (arg.equals("Page Setup"))
+        {
+            SetPageDialog spDialog = new SetPageDialog(this, "Page Setup Dialog");
 
+            JButton button_Portrait = new JButton("Portrait!");
+            JButton button_Landscape = new JButton("Landscape!");
+            button_Portrait.setVisible(true);
+            button_Portrait.setBounds(30,50,40,40);
+            button_Landscape.setVisible(true);
+            button_Landscape.setBounds(90,50,40,40);
+            spDialog.add(button_Portrait);
+            spDialog.add(button_Landscape);
+
+            spDialog.setVisible(true);
+            spDialog.setSize(250, 100);
+
+            button_Portrait.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    spDialog.dispose();
+                    setSize(500, 1000);
+
+                }
+            });
+            button_Landscape.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    spDialog.dispose();
+                    setSize(1000, 500);
+                }
+            });
+        }
     }
     public static void main(String args[]) {
         TextEditor to = new TextEditor();
@@ -353,5 +382,16 @@ class AboutDialog extends JDialog implements ActionListener {
 
     public void actionPerformed(ActionEvent ae) {
         dispose();
+    }
+}
+
+class SetPageDialog extends JDialog implements ActionListener {
+    SetPageDialog(Frame parent, String title) {
+        super(parent, title, false);
+        this.setResizable(false);
+        setLayout(new FlowLayout(FlowLayout.CENTER));
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
     }
 }
