@@ -200,7 +200,6 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
             d1.add(lbAbout);
             lbAbout.setText("<HTML><p>This is a custom text editor app. The app can be used to replace notepad or similar <br>" +
                     " tool for text editor. <br> <br> I hope you enjoy this cool app !!!</p></html>");
-
             d1.setVisible(true);
             setSize(500, 500);
         }
