@@ -14,7 +14,7 @@ import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
 //TextEditor class starts here
-class TextEditor extends Frame implements ActionListener {
+class TextEditor extends Frame implements ActionListener, ItemListener {
     static JTextArea ta = new JTextArea();
     static File f1;
     int i, len1, len, pos1;
@@ -60,7 +60,7 @@ class TextEditor extends Frame implements ActionListener {
             mi2[i].addActionListener(this);
         }
         m3.add(chkb);
-        chkb.addActionListener(this);
+        chkb.addItemListener(this);
         for (int i = 0; i < mi3.length; i++) {
             m3.add(mi3[i]);
             mi3[i].addActionListener(this);
@@ -138,6 +138,10 @@ class TextEditor extends Frame implements ActionListener {
         }
         catch (IOException e)
         {
+        }
+        if (arg.equals("Word Wrap")) {
+            saveFile(f1, ta);
+            System.exit(0);
         }
         if (arg.equals("Exit")) {
             saveFile(f1, ta);
@@ -263,6 +267,25 @@ class TextEditor extends Frame implements ActionListener {
             } catch (IOException e)
             {
                 System.out.println("savefile exception");
+            }
+        }
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e)
+    {
+        String arg = (String) e.getItem();
+        if (arg.equals("Word Wrap"))
+        {
+            if (chkb.getState())
+            {
+                ta.setLineWrap(true);
+                ta.setWrapStyleWord(true);
+            }
+            else
+            {
+                ta.setLineWrap(false);
+                ta.setWrapStyleWord(false);
             }
         }
     }
