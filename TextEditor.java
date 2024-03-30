@@ -22,17 +22,32 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
     String str = "", s3 = "", s2 = "", s4 = "", s32 = "", s6 = "", s7 = "", s8 = "", s9 = "", strFind = "", strReplace = "";
     String months[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December" };
+
+    Integer[] fontSizes = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 34, 38, 42, 46, 50 };
+
+    JComboBox fontList = new JComboBox(fontSizes);
+
     CheckboxMenuItem chkb = new CheckboxMenuItem("Word Wrap");
     Highlighter highlighter;
     HighlightPainter painter;
 
     // Added Label for About Option
-    JLabel lbAbout;
+    JLabel lbAbout, lbFontSize;
+
+    JToolBar tlBar;
+
+    Font font;
+    Integer fontStyle, fontSize;
 
     public TextEditor() {
         MenuBar mb = new MenuBar();
         setLayout(new BorderLayout());
         add("Center", ta);
+        ta.setBackground(Color.pink);
+        fontStyle = Font.ROMAN_BASELINE;
+        fontSize = 20;
+        font = new Font("Helventica", fontStyle, fontSize);
+        ta.setFont(font);
 
         // Added Vertical and Horizonal Scrollbar
         JScrollPane sp = new JScrollPane(ta);
@@ -40,7 +55,59 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         add(sp);
 
-        lbAbout= new JLabel();
+        tlBar = new JToolBar();
+        JButton button_FontPlain = new JButton("Plain");
+        JButton button_FontBold = new JButton("Bold");
+        JButton button_FontItalic = new JButton("Italic");
+        button_FontBold.setVisible(true);
+        button_FontBold.setBounds(30,50,40,40);
+        button_FontItalic.setVisible(true);
+        button_FontItalic.setBounds(90,50,40,40);
+        lbFontSize = new JLabel("Font Size");
+        fontList.setSelectedIndex(17);
+        fontList.addActionListener(this);
+
+        tlBar.add(button_FontPlain);
+        tlBar.add(button_FontBold);
+        tlBar.add(button_FontItalic);
+        tlBar.add(lbFontSize);
+        tlBar.add(fontList);
+        this.add(tlBar, BorderLayout.NORTH);
+
+        button_FontPlain.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fontStyle = Font.PLAIN;
+                font = new Font("Helventica", fontStyle, fontSize);
+                ta.setFont(font);
+            }
+        });
+        button_FontBold.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fontStyle = Font.BOLD;
+                font = new Font("Helventica", fontStyle, fontSize);
+                ta.setFont(font);
+            }
+        });
+
+        button_FontItalic.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fontStyle = Font.ITALIC;
+                font = new Font("Helventica", fontStyle, fontSize);
+                ta.setFont(font);
+            }
+        });
+
+        fontList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fontSize = (Integer) fontList.getSelectedItem();
+                font = new Font("Helventica", fontStyle, fontSize);
+                ta.setFont(font);
+            }
+        });
 
         setMenuBar(mb);
         Menu m1 = new Menu("File");
@@ -51,6 +118,7 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
         mb.add(m2);
         mb.add(m3);
         mb.add(m4);
+
         MenuItem mi1[] = {
                 new MenuItem("New"), new MenuItem("Open"), new MenuItem("Save"), new MenuItem("Save As"),
                 new MenuItem("Page Setup"), new MenuItem("Print"), new MenuItem("Exit")
@@ -84,7 +152,7 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
         }
 
         highlighter = ta.getHighlighter();
-        painter = new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
+        painter = new DefaultHighlighter.DefaultHighlightPainter(Color.cyan);
 
         MyWindowsAdapter mw = new MyWindowsAdapter(this);
         addWindowListener(mw);
@@ -153,11 +221,19 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
         {
         }
         if (arg.equals("Word Wrap")) {
-            saveFile(f1, ta);
+            try {
+                saveFile(f1, ta);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             System.exit(0);
         }
         if (arg.equals("Exit")) {
-            saveFile(f1, ta);
+            try {
+                saveFile(f1, ta);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             System.exit(0);
         }
         if (arg.equals("Cut")) {
@@ -318,13 +394,16 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
                 }
             });
         }
+        if (arg.equals("Choose Font"))
+        {
+
+        }
     }
     public static void main(String args[]) {
         TextEditor to = new TextEditor();
     }
 
-    public void saveFile(File file, JTextArea textArea)
-    {
+    public void saveFile(File file, JTextArea textArea) throws IOException {
         if (file != null) {
             String filePath = file.getAbsolutePath();
             try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePath)))
@@ -334,6 +413,24 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
             {
                 System.out.println("savefile exception");
             }
+        }
+        else
+        {
+            FileDialog dialog1 = new FileDialog(this, "Save As", FileDialog.SAVE);
+            dialog1.setVisible(true);
+            s7 = dialog1.getDirectory();
+            s8 = dialog1.getFile();
+            s9 = s7 + s8 + ".txt";
+            s6 = ta.getText();
+            len1 = s6.length();
+            byte buf[] = s6.getBytes();
+            f1 = new File(s9);
+            FileOutputStream fobj1 = new FileOutputStream(f1);
+            for (int k = 0; k < len1; k++)
+            {
+                fobj1.write(buf[k]);
+            }
+            fobj1.close();
         }
     }
 
@@ -367,7 +464,11 @@ class MyWindowsAdapter extends WindowAdapter {
 
     public void windowClosing(WindowEvent we)
     {
-        tt.saveFile(TextEditor.f1, TextEditor.ta);
+        try {
+            tt.saveFile(TextEditor.f1, TextEditor.ta);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         tt.dispose();
     }
 }
