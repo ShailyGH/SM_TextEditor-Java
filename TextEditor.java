@@ -195,44 +195,25 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
         catch (IOException e)
         {
         }
-        try
+        if (arg.equals("Save As"))
         {
-            if (arg.equals("Save As"))
-            {
-                FileDialog dialog1 = new FileDialog(this, "Save As", FileDialog.SAVE);
-                dialog1.setVisible(true);
-                s7 = dialog1.getDirectory();
-                s8 = dialog1.getFile();
-                s9 = s7 + s8 + ".txt";
-                s6 = ta.getText();
-                len1 = s6.length();
-                byte buf[] = s6.getBytes();
-                f1 = new File(s9);
-                FileOutputStream fobj1 = new FileOutputStream(f1);
-                for (int k = 0; k < len1; k++)
-                {
-                    fobj1.write(buf[k]);
-                }
-                fobj1.close();
-            }
-            this.setTitle(s8 + " TextEditor File");
-        }
-        catch (IOException e)
-        {
-        }
-        if (arg.equals("Word Wrap")) {
             try {
                 saveFile(f1, ta);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            System.exit(0);
+        }
+        this.setTitle(s8 + " TextEditor File");
+        if (arg.equals("Word Wrap")) {
+
         }
         if (arg.equals("Exit")) {
-            try {
-                saveFile(f1, ta);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if(!ta.getText().isEmpty()) {
+                try {
+                    saveFile(f1, ta);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
             System.exit(0);
         }
@@ -420,17 +401,18 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
             dialog1.setVisible(true);
             s7 = dialog1.getDirectory();
             s8 = dialog1.getFile();
-            s9 = s7 + s8 + ".txt";
-            s6 = ta.getText();
-            len1 = s6.length();
-            byte buf[] = s6.getBytes();
-            f1 = new File(s9);
-            FileOutputStream fobj1 = new FileOutputStream(f1);
-            for (int k = 0; k < len1; k++)
-            {
-                fobj1.write(buf[k]);
+            if(!s7.isEmpty() && !s8.isEmpty()) {
+                s9 = s7 + s8 + ".txt";
+                s6 = ta.getText();
+                len1 = s6.length();
+                byte buf[] = s6.getBytes();
+                f1 = new File(s9);
+                FileOutputStream fobj1 = new FileOutputStream(f1);
+                for (int k = 0; k < len1; k++) {
+                    fobj1.write(buf[k]);
+                }
+                fobj1.close();
             }
-            fobj1.close();
         }
     }
 
@@ -464,12 +446,15 @@ class MyWindowsAdapter extends WindowAdapter {
 
     public void windowClosing(WindowEvent we)
     {
-        try {
-            tt.saveFile(TextEditor.f1, TextEditor.ta);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(!TextEditor.ta.getText().isEmpty()) {
+            try {
+                tt.saveFile(TextEditor.f1, TextEditor.ta);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         tt.dispose();
+
     }
 }
 
