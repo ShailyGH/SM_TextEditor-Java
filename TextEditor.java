@@ -49,6 +49,8 @@ class TextEditor extends Frame implements ActionListener, ItemListener {
         font = new Font("Helventica", fontStyle, fontSize);
         ta.setFont(font);
 
+        lbAbout = new JLabel("");
+
         // Added Vertical and Horizonal Scrollbar
         JScrollPane sp = new JScrollPane(ta);
         sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
